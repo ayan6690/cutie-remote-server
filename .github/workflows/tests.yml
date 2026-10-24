@@ -1,6 +1,6 @@
 name: Cutie Remote Server Tests
 
-on:
+"on":
   push:
   pull_request:
   workflow_dispatch:
