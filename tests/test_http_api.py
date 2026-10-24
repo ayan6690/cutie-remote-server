@@ -27,8 +27,11 @@ def test_health_endpoint(client):
 
 
 def test_existing_v1_routes_remain_available(client):
-    # These checks ensure the legacy API paths still exist.
-    paths = {route.path for route in client.app.routes}
+    # Inspect the public OpenAPI schema rather than FastAPI internals.
+    response = client.get("/openapi.json")
+    assert response.status_code == 200
+
+    paths = response.json()["paths"]
     assert "/v1/admin/status" in paths
     assert "/v1/features" in paths
     assert "/v1/device/pair" in paths
