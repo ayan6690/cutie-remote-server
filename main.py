@@ -107,3 +107,10 @@ $('clear').onclick=()=>{key='';$('key').value='';$('connection').textContent='Di
 $('health').onclick=async()=>{try{const d=await req('/health',{headers:{}});$('healthOut').textContent=JSON.stringify(d,null,2);$('serverState').textContent='Online';$('serverState').className='status good'}catch(e){$('healthOut').textContent=e.message;$('serverState').textContent='Unavailable';$('serverState').className='status bad'}};
 $('history').onclick=async()=>{try{$('historyOut').textContent=JSON.stringify(await req('/v1/commands'),null,2)}catch(e){$('historyOut').textContent=e.message}};
 </script></body></html>'''
+
+
+# CUTIE_REMOTE_QUEUE_INTEGRATION
+import remote_queue as _cutie_remote_queue
+_cutie_remote_queue.set_admin_checker(require_admin)
+_cutie_remote_queue.init_db()
+app.include_router(_cutie_remote_queue.router)
