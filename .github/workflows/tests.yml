@@ -12,6 +12,7 @@ jobs:
       CUTIE_API_KEY: test-admin-key
       CUTIE_PAIRING_CODE: test-pairing-code
       CUTIE_DATA_DIR: /tmp/cutie-test-data
+      PYTHONPATH: ${{ github.workspace }}
 
     steps:
       - name: Checkout
