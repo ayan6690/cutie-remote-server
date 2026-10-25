@@ -29,14 +29,11 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt "httpx>=0.27,<0.29" pytest
 
-      - name: Verify Firebase Admin SDK
-        run: python -c "import firebase_admin; print('Firebase Admin SDK import OK')"
-
       - name: Compile Python files
-        run: python -m compileall -q main.py remote_queue.py tests
+        run: python -m compileall -q main.py remote_queue.py firebase_store.py tests
 
-      - name: Run HTTP API tests
-        run: pytest -q tests/test_http_api.py
+      - name: Run all tests
+        run: python -m pytest -q tests/
 
       - name: Run isolated queue smoke tests
         run: python tests/smoke_queue.py
