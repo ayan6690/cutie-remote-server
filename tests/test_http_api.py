@@ -159,3 +159,33 @@ def test_http_rejects_task_outside_allowlist(client):
         json={"device_id": "unknown-device", "task": "delete"},
     )
     assert response.status_code == 400
+
+def test_firebase_check_requires_admin_authentication(client):
+    response = client.post("/api/admin/firebase-check")
+    assert response.status_code == 401
+
+
+def test_firebase_check_rejects_wrong_admin_token(client):
+    response = client.post(
+        "/api/admin/firebase-check",
+        headers={"X-Admin-Token": "wrong-token"},
+    )
+    assert response.status_code == 401
+
+
+def test_firebase_check_fails_safely_without_credentials(client, monkeypatch):
+    monkeypatch.delenv("FIREBASE_SERVICE_ACCOUNT_JSON", raising=False)
+    monkeypatch.delenv("GOOGLE_APPLICATION_CREDENTIALS", raising=False)
+    monkeypatch.delenv("FIREBASE_PROJECT_ID", raising=False)
+
+    response = client.post(
+        "/api/admin/firebase-check",
+        headers={"X-Admin-Token": "test-admin-key"},
+    )
+
+    assert response.status_code == 503
+    assert response.json()["detail"] == (
+        "Firebase connection check failed. Check server logs and credentials."
+    )
+    assert "private_key" not in response.text.lower()
+    assert "service-account" not in response.text.lower()

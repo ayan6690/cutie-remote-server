@@ -114,3 +114,22 @@ import remote_queue as _cutie_remote_queue
 _cutie_remote_queue.set_admin_checker(require_admin)
 _cutie_remote_queue.init_db()
 app.include_router(_cutie_remote_queue.router)
+
+
+# CUTIE_FIREBASE_CHECK_ENDPOINT
+import logging as _cutie_firebase_logging
+
+@app.post("/api/admin/firebase-check")
+def firebase_connection_check(
+    x_admin_token: str | None = Header(default=None, alias="X-Admin-Token")
+):
+    require_admin(x_admin_token)
+    try:
+        from firebase_store import verify_firestore_connection
+        return verify_firestore_connection()
+    except Exception:
+        _cutie_firebase_logging.exception("Firebase connection check failed")
+        raise HTTPException(
+            status_code=503,
+            detail="Firebase connection check failed. Check server logs and credentials.",
+        )
